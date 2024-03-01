@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <color name="black">#FF18191A</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="error">#E21D12</color>
+    <color name="success">#158444</color>
+    <color name="dark_purple">#432BA1</color>
+    <color name="light_purple">#998EFD</color>
+    <color name="background">#FAFAFA</color>
 </resources>

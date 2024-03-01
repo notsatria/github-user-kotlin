@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">GithubUsers</string>
+    <string name="search_hint">Cari username Github ...</string>
+    <string name="empty_search">Data pencarian masih kosong</string>
+    <string name="user_fullname">Nama User</string>
+    <string name="username">\@username</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
