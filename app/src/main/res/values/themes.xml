@@ -1,0 +1,30 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.GithubUsers" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.GithubUsers" parent="Base.Theme.GithubUsers" />
+
+    <style name="Poppins">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Poppins.Light">
+        <item name="android:fontFamily">@font/poppins_light</item>
+    </style>
+
+    <style name="Poppins.Medium">
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
+    <style name="Poppins.SemiBold">
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+    </style>
+
+    <style name="Poppins.Bold">
+        <item name="android:fontFamily">@font/poppins_bold</item>
+    </style>
+</resources>
