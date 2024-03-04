@@ -1,9 +1,15 @@
 <resources>
     <string name="app_name">GithubUsers</string>
-    <string name="search_hint">Cari username Github ...</string>
-    <string name="empty_search">Data pencarian masih kosong</string>
+    <string name="search_hint">Cari user Github ...</string>
+    <string name="empty_search">Hasil pencarian tidak ditemukan</string>
     <string name="user_fullname">Nama User</string>
     <string name="username">\@username</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="tab_followers">Followers</string>
+    <string name="tab_following">Following</string>
+    <string name="_200">200</string>
+    <string name="followers">Followers</string>
+    <string name="following">Following</string>
+    <string name="text_error">Terjadi Kesalahan</string>
+    <string name="empty_data">Data kosong</string>
 </resources>

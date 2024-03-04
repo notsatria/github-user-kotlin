@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             tools:context=".ui.FollowFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvUserList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:visibility="visible"
+            tools:listitem="@layout/github_user_item"
+            android:paddingTop="16dp"
+    />
+
+    <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:indicatorColor="@color/dark_purple"
+            android:layout_gravity="center"
+         >
+    </ProgressBar>
+
+    <RelativeLayout
+            android:id="@+id/rlError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible"
+    >
+        <ImageView
+                android:id="@+id/ivError"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_error_24"
+                android:layout_centerHorizontal="true"
+                app:tint="@color/error"/>
+
+        <TextView
+                android:id="@+id/tvError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/empty_data"
+                android:layout_below="@id/ivError"
+                android:layout_marginTop="8dp"
+                style="@style/Poppins.SemiBold"
+                android:visibility="visible"/>
+    </RelativeLayout>
+
+</FrameLayout>
