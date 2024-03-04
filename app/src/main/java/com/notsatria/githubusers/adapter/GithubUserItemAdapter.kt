@@ -7,13 +7,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.notsatria.githubusers.R
-import com.notsatria.githubusers.data.User
+import com.notsatria.githubusers.response.User
 
 
 class GithubUserItemAdapter(private var list: List<User>) : RecyclerView.Adapter<GithubUserItemAdapter.ViewHolder>() {
 
-    private val filteredList = mutableListOf<User>()
+    private lateinit var onItemClickCallback: OnItemClickCallback
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater.from(parent.context).inflate(R.layout.github_user_item, parent, false)
         return ViewHolder(view)
@@ -21,33 +22,31 @@ class GithubUserItemAdapter(private var list: List<User>) : RecyclerView.Adapter
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivAvatar: ImageView = itemView.findViewById(R.id.ivAvatar)
-        val tvName: TextView = itemView.findViewById(R.id.tvName)
         val tvUsername: TextView = itemView.findViewById(R.id.tvUsername)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (filteredList.isNotEmpty()) {
-            val user = filteredList[position]
-            holder.tvName.text = user.name
-            holder.tvUsername.text = user.username
-            return
-        }
         val user = list[position]
-//        holder.ivAvatar.setImageResource(user.avatar)
-        holder.tvName.text = user.name
-        holder.tvUsername.text = user.username
-    }
+        holder.tvUsername.text = user.login
+        Glide.with(holder.itemView.context)
+            .load(user.avatarUrl)
+            .into(holder.ivAvatar)
 
-    override fun getItemCount(): Int = if (filteredList.isNotEmpty()) filteredList.size else list.size
-
-    fun filterList(query: String) {
-       filteredList.clear()
-        for (user in list) {
-            if (user.username.contains(query, ignoreCase = true)) {
-                filteredList.add(user)
-                Log.d("GithubUserItemAdapter", "filterList: ${user.username}")
-            }
+        holder.itemView.setOnClickListener {
+            Log.d("GithubUserItemAdapter", "onBindViewHolder: ${list[position].login}")
+            onItemClickCallback.onItemClicked(list[position].login.toString())
         }
-        notifyDataSetChanged()
+
     }
+
+    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
+        this.onItemClickCallback = onItemClickCallback
+    }
+
+    interface OnItemClickCallback {
+        fun onItemClicked(data: String)
+    }
+
+    override fun getItemCount(): Int = list.size
+
 }
