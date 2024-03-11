@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.notsatria.githubusers.R
-import com.notsatria.githubusers.response.User
+import com.notsatria.githubusers.data.remote.response.User
 
 class UserFollowAdapter(private val list: List<User>) : RecyclerView.Adapter<UserFollowAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

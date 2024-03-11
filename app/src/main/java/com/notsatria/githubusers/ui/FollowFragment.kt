@@ -6,14 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.notsatria.githubusers.R
 import com.notsatria.githubusers.adapter.UserFollowAdapter
 import com.notsatria.githubusers.databinding.FollowFragmentBinding
-import com.notsatria.githubusers.response.User
-import com.notsatria.githubusers.viewmodel.DetailViewModel
+import com.notsatria.githubusers.data.remote.response.User
+import com.notsatria.githubusers.ui.detail.DetailViewModelFactory
+import com.notsatria.githubusers.ui.detail.DetailViewModel
 
 class FollowFragment() : Fragment() {
 
@@ -51,7 +52,10 @@ class FollowFragment() : Fragment() {
             username = it.getString(ARG_USERNAME)
         }
 
-        detailViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[DetailViewModel::class.java]
+//        detailViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[DetailViewModel::class.java]
+
+        val factory: DetailViewModelFactory = DetailViewModelFactory.getInstance(requireContext())
+        val detailViewModel: DetailViewModel by viewModels { factory }
 
         detailViewModel.getFollowers(username!!, requireContext())
         detailViewModel.getFollowing(username!!, requireContext())
@@ -71,10 +75,19 @@ class FollowFragment() : Fragment() {
                 Log.d("FollowFragment", "showRecyclerList: $it")
                 showRecyclerList(it)
             }
+            detailViewModel.isEmptyFollowers.observe(viewLifecycleOwner) { isEmptyFollowers ->
+                Log.d("FollowFragment", "showEmpty: $isEmptyFollowers")
+                showEmptyFollowers(isEmptyFollowers)
+            }
         } else {
             detailViewModel.detailFollowingUser.observe(viewLifecycleOwner) {
                 showRecyclerList(it)
             }
+            detailViewModel.isEmptyFollowing.observe(viewLifecycleOwner) { isEmptyFollowing ->
+                Log.d("FollowFragment", "showEmpty: $isEmptyFollowing")
+                showEmptyFollowing(isEmptyFollowing)
+            }
+
         }
     }
 
@@ -84,6 +97,14 @@ class FollowFragment() : Fragment() {
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    private fun showEmptyFollowers(isEmpty: Boolean) {
+        binding.tvEmptyFollowers.visibility = if (isEmpty) View.VISIBLE else View.GONE
+    }
+
+    private fun showEmptyFollowing(isEmpty: Boolean) {
+        binding.tvEmptyFollowing.visibility = if (isEmpty) View.VISIBLE else View.GONE
     }
 
     private fun showRecyclerList(list: List<User>) {
