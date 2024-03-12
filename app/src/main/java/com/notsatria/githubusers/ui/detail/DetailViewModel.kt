@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.notsatria.githubusers.data.local.entity.UserEntity
 import com.notsatria.githubusers.data.repository.DetailUserRepository
 import com.notsatria.githubusers.data.remote.response.User
 import com.notsatria.githubusers.data.remote.retrofit.ApiConfig
@@ -16,7 +17,6 @@ class DetailViewModel(private val detailUserRepository: DetailUserRepository) : 
         const val TAG = "DetailActivity"
         const val EXTRA_USERNAME = "extra_username"
     }
-
 
     private val _detailFollowerUser = MutableLiveData<List<User>>()
     val detailFollowerUser: MutableLiveData<List<User>> = _detailFollowerUser
@@ -36,30 +36,17 @@ class DetailViewModel(private val detailUserRepository: DetailUserRepository) : 
     private val _isEmptyFollowing = MutableLiveData<Boolean>()
     val isEmptyFollowing: MutableLiveData<Boolean> = _isEmptyFollowing
 
-//     fun getDetailUser(username: String, context: Context) {
-//        _isLoading.value = true
-//        val client = ApiConfig.getApiService(context = context).getDetailUser(username)
-//        client.enqueue(object : Callback<DetailUserResponse> {
-//            override fun onResponse(call: Call<DetailUserResponse>, response: Response<DetailUserResponse>) {
-//                _isLoading.value = false
-//                if (response.isSuccessful) {
-//                    _detailUser.value = response.body() as DetailUserResponse
-//                    Log.d(TAG, "onResponse: ${response.body()}")
-//                } else {
-//                    _isError.value = true
-//                    Log.e(TAG, "onFailure: ${response.message()}")
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<DetailUserResponse>, t: Throwable) {
-//                _isLoading.value = false
-//                _isError.value = true
-//                Log.e(TAG, "onFailure: ${t.message}")
-//            }
-//        })
-//    }
-
     fun getDetailUser(username: String) = detailUserRepository.getDetailUser(username)
+
+    fun isFavoriteUser(username: String) = detailUserRepository.isFavoriteUser(username)
+
+    fun setFavoriteUser(user: UserEntity) {
+        detailUserRepository.setFavoriteUser(user, true)
+    }
+
+    fun deleteFavoriteUser(user: UserEntity) {
+        detailUserRepository.setFavoriteUser(user, false)
+    }
 
     fun getFollowers(username: String, context: Context) {
         _isLoading.value = true

@@ -10,24 +10,26 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.notsatria.githubusers.R
 import com.notsatria.githubusers.adapter.SectionsPagerAdapter
 import com.notsatria.githubusers.data.Result
+import com.notsatria.githubusers.data.local.entity.UserEntity
 import com.notsatria.githubusers.databinding.ActivityDetailBinding
 
 class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
 
-    companion object {
-        @StringRes
-        private val TAB_TITLES = intArrayOf(
-            com.notsatria.githubusers.R.string.tab_followers,
-            com.notsatria.githubusers.R.string.tab_following
-        )
-    }
+//    val factory: DetailViewModelFactory = DetailViewModelFactory.getInstance(applicationContext)
+//    val detailViewModel: DetailViewModel by viewModels { factory }
+
+    private lateinit var factory: DetailViewModelFactory
+    private val detailViewModel: DetailViewModel by viewModels { factory }
+
+    private var userEntity: UserEntity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,10 +41,9 @@ class DetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.elevation = 0f
 
-        val factory: DetailViewModelFactory = DetailViewModelFactory.getInstance(applicationContext)
-        val detailViewModel: DetailViewModel by viewModels { factory }
-
         val username = intent.getStringExtra(DetailViewModel.EXTRA_USERNAME)
+
+        factory = DetailViewModelFactory.getInstance(applicationContext)
 
         let {
             if (username != null) {
@@ -55,6 +56,7 @@ class DetailActivity : AppCompatActivity() {
                             is Result.Success -> {
                                 binding.progressBar.visibility = View.GONE
                                 val user = result.data
+                                userEntity = user
                                 with(binding) {
                                     tvNameDetail.text = user.name
                                     tvUsernameDetail.text = "@${user.login}"
@@ -80,19 +82,6 @@ class DetailActivity : AppCompatActivity() {
                 }
             }
         }
-
-//        detailViewModel.detailUser.observe(this) {
-//            Log.d(DetailViewModel.TAG, "detailUser: $it")
-//            with(binding) {
-//                tvNameDetail.text = detailViewModel.detailUser.value?.name
-//                tvUsernameDetail.text = "@${detailViewModel.detailUser.value?.login}"
-//                Glide.with(this@DetailActivity)
-//                    .load(detailViewModel.detailUser.value?.avatarUrl)
-//                    .into(ivAvatarDetail)
-//                tvFollowersDetail.text = detailViewModel.detailUser.value?.followers.toString()
-//                tvFollowingDetail.text = detailViewModel.detailUser.value?.following.toString()
-//            }
-//        }
 
         detailViewModel.isLoading.observe(this) { isLoading ->
             showLoading(isLoading)
@@ -127,6 +116,11 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.favorite_menu, menu)
         val menuItem = menu?.findItem(R.id.favorite)
+
+        userEntity?.let { user ->
+            menuItem?.setIcon(if (user.isFavorite) R.drawable.ic_favorite_24 else R.drawable.ic_favorite_border_24)
+        }
+
         menuItem?.icon?.setTint(ContextCompat.getColor(this, R.color.error))
         return true
     }
@@ -138,10 +132,33 @@ class DetailActivity : AppCompatActivity() {
                 return true
             }
             R.id.favorite -> {
+                userEntity?.let { user ->
+                    if (user.isFavorite) {
+                        detailViewModel.deleteFavoriteUser(user)
+                        showSnackbar("${user.login} removed from favorite")
+                    } else {
+                        detailViewModel.setFavoriteUser(user)
+                        showSnackbar("${user.login} added to favorite")
+                    }
 
+                    item.setIcon(if (user.isFavorite) R.drawable.ic_favorite_24 else R.drawable.ic_favorite_border_24)
+                    item.icon?.setTint(ContextCompat.getColor(this, R.color.error))
+                }
             }
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showSnackbar(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    companion object {
+        @StringRes
+        private val TAB_TITLES = intArrayOf(
+            com.notsatria.githubusers.R.string.tab_followers,
+            com.notsatria.githubusers.R.string.tab_following
+        )
     }
 }

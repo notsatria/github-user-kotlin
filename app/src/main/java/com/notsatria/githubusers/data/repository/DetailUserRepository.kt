@@ -56,6 +56,19 @@ class DetailUserRepository private constructor(
         return result
     }
 
+    fun setFavoriteUser(user: UserEntity, favoriteState: Boolean) {
+        appExecutors.diskIO.execute {
+            user.isFavorite = favoriteState
+            userDao.update(user)
+        }
+    }
+
+    fun isFavoriteUser(username: String) {
+        appExecutors.diskIO.execute {
+            userDao.isUserFavorite(username)
+        }
+    }
+
     companion object {
         @Volatile
         private var instance: DetailUserRepository? = null

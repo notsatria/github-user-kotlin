@@ -7,22 +7,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.notsatria.githubusers.R
 import com.notsatria.githubusers.adapter.GithubUserItemAdapter
 import com.notsatria.githubusers.data.Result
 import com.notsatria.githubusers.data.local.entity.UserEntity
 import com.notsatria.githubusers.databinding.FragmentHomeBinding
 import com.notsatria.githubusers.ui.detail.DetailActivity
 import com.notsatria.githubusers.ui.detail.DetailViewModel
-import com.notsatria.githubusers.ui.main.MainActivity
-import com.notsatria.githubusers.ui.main.MainViewModel
-import com.notsatria.githubusers.ui.main.MainViewModelFactory
 
 class HomeFragment : Fragment() {
 
@@ -42,10 +37,10 @@ class HomeFragment : Fragment() {
         rvGithubUser = binding.rvSearchResult
         clMain = binding.clMain
 
-        val factory: MainViewModelFactory = MainViewModelFactory.getInstance(requireContext())
-        val mainViewModel: MainViewModel by viewModels { factory }
+        val factory: HomeViewModelFactory = HomeViewModelFactory.getInstance(requireContext())
+        val homeViewModel: HomeViewModel by viewModels { factory }
 
-        mainViewModel.searchUser("a").observe(viewLifecycleOwner) { result ->
+        homeViewModel.searchUser("a").observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 when (result) {
                     is Result.Loading -> {
@@ -56,7 +51,7 @@ class HomeFragment : Fragment() {
                         binding.rlEmptySearch.visibility = View.GONE
                         binding.progressBar.visibility = View.GONE
                         val userList = result.data
-                        showRecyclerList(userList, mainViewModel)
+                        showRecyclerList(userList, homeViewModel)
                     }
                     is Result.Empty -> {
                         binding.progressBar.visibility = View.GONE
@@ -78,7 +73,7 @@ class HomeFragment : Fragment() {
                 .setOnEditorActionListener { textView, _, _ ->
                     val query = textView.text.toString()
                     if (query.isNotEmpty()) {
-                        mainViewModel.searchUser(query).observe(viewLifecycleOwner ) { result ->
+                        homeViewModel.searchUser(query).observe(viewLifecycleOwner ) { result ->
                             if (result != null) {
                                 when (result) {
                                     is Result.Loading -> {
@@ -89,7 +84,7 @@ class HomeFragment : Fragment() {
                                         binding.rlEmptySearch.visibility = View.GONE
                                         binding.progressBar.visibility = View.GONE
                                         val userList = result.data
-                                        showRecyclerList(userList, mainViewModel)
+                                        showRecyclerList(userList, homeViewModel)
                                     }
                                     is Result.Empty -> {
                                         binding.progressBar.visibility = View.GONE
@@ -118,7 +113,7 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun showRecyclerList(userList: List<UserEntity>, mainViewModel: MainViewModel) {
+    private fun showRecyclerList(userList: List<UserEntity>, homeViewModel: HomeViewModel) {
         val adapter = GithubUserItemAdapter(userList)
         rvGithubUser.layoutManager = LinearLayoutManager(requireContext())
         rvGithubUser.adapter = adapter
@@ -137,17 +132,19 @@ class HomeFragment : Fragment() {
                 adapter.notifyDataSetChanged()
 
                 if (userEntity.isFavorite) {
-                    mainViewModel.setFavoriteUser(userEntity)
+                    homeViewModel.setFavoriteUser(userEntity)
                 } else {
-                    mainViewModel.deleteFavoriteUser(userEntity)
+                    homeViewModel.deleteFavoriteUser(userEntity)
                 }
 
-                val message = if (userEntity.isFavorite) "${userEntity.login} Berhasil ditambahkan ke favorit" else "${userEntity.login} dihapus dari favorit"
+                val message = if (userEntity.isFavorite) "${userEntity.login} added to favorite" else "${userEntity.login} removed from favorite"
 
-                val snackbar = Snackbar.make(clMain, message, Snackbar.LENGTH_SHORT)
-
-                snackbar.show()
+                showSnackbar(message)
             }
         })
+    }
+
+    private fun showSnackbar(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 }

@@ -29,7 +29,7 @@ interface UserDao {
     @Update
     fun update(userEntity: UserEntity)
 
-    @Query("DELETE FROM user")
+    @Query("DELETE FROM user WHERE is_favorite = 0")
     fun deleteAll()
 
     @Delete
