@@ -1,5 +1,6 @@
 package com.notsatria.githubusers.ui.detail
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -102,6 +103,19 @@ class DetailActivity : AppCompatActivity() {
 
         detailViewModel.isError.observe(this) { isError ->
             showError(isError)
+        }
+
+        binding.fabShare.setOnClickListener {
+            userEntity?.let { user ->
+                val shareText = "Check out this user at Github: ${user.htmlUrl}"
+                val sendIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, shareText)
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                startActivity(shareIntent)
+            }
         }
     }
 

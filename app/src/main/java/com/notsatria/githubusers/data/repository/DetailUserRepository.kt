@@ -33,7 +33,7 @@ class DetailUserRepository private constructor(
                             responseBody?.id,
                             responseBody?.login,
                             responseBody?.avatarUrl,
-                            responseBody?.reposUrl,
+                            responseBody?.htmlUrl,
                             isFavorite,
                             responseBody?.followers,
                             responseBody?.following,

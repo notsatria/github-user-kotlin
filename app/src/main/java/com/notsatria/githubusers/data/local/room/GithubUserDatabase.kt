@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.notsatria.githubusers.data.local.entity.UserEntity
 
-@Database(entities = [UserEntity::class], version = 2)
+@Database(entities = [UserEntity::class], version = 3)
 abstract class GithubUserDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 

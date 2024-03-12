@@ -36,7 +36,7 @@ class GithubUserRepository private constructor(
                                 user.id,
                                 user.login,
                                 user.avatarUrl,
-                                user.reposUrl,
+                                user.htmlUrl,
                                 isFavorite
                             )
                             userList.add(userEntity)

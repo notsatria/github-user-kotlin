@@ -4,6 +4,7 @@ import android.content.Context
 import com.notsatria.githubusers.data.repository.DetailUserRepository
 import com.notsatria.githubusers.data.repository.GithubUserRepository
 import com.notsatria.githubusers.data.local.room.GithubUserDatabase
+import com.notsatria.githubusers.data.preferences.SettingPreferences
 import com.notsatria.githubusers.data.remote.retrofit.ApiConfig
 import com.notsatria.githubusers.utils.AppExecutors
 
@@ -24,4 +25,7 @@ object Injection {
         return DetailUserRepository.getInstance(apiService, dao, appExecutors)
     }
 
+    fun provideSettingPreferences(context: Context): SettingPreferences {
+        return SettingPreferences.getInstance(context)
+    }
 }

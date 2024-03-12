@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class DetailUserResponse(
 
-	@field:SerializedName("repos_url")
-	val reposUrl: String? = null,
+	@field:SerializedName("html_url")
+	val htmlUrl: String? = null,
 
 	@field:SerializedName("created_at")
 	val createdAt: String? = null,

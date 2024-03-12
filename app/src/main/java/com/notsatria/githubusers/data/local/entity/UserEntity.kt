@@ -18,8 +18,8 @@ data class UserEntity(
     @ColumnInfo(name = "avatar_url")
     val avatarUrl: String? = null,
 
-    @ColumnInfo(name = "repos_url")
-    val reposUrl: String? = null,
+    @ColumnInfo(name = "html_url")
+    val htmlUrl: String? = null,
 
     @ColumnInfo(name = "is_favorite")
     var isFavorite: Boolean,
