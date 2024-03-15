@@ -11,11 +11,14 @@ import com.notsatria.githubusers.data.local.entity.UserEntity
 
 @Dao
 interface UserDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(userEntities: List<UserEntity>)
 
     @Query("SELECT * FROM user")
     fun getAll(): LiveData<List<UserEntity>>
+
+    @Query("SELECT * FROM user WHERE is_favorite = 0")
+    fun searchUser(): LiveData<List<UserEntity>>
 
     @Query("SELECT * FROM user WHERE login = :login")
     fun getUser(login: String): LiveData<UserEntity>
@@ -28,6 +31,9 @@ interface UserDao {
 
     @Update
     fun update(userEntity: UserEntity)
+
+    @Query("UPDATE user SET followers = :followers, following = :following, name = :name, is_favorite = :isFavorite WHERE login = :login")
+    fun updateDetailUser(login: String, followers: Int, following: Int, name: String, isFavorite: Boolean)
 
     @Query("DELETE FROM user WHERE is_favorite = 0")
     fun deleteAll()

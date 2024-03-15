@@ -42,7 +42,10 @@ class FavoriteFragment : Fragment() {
             if (userList.isEmpty()) {
                 binding.tvError.text = "No favorite user found"
                 binding.rlError.visibility = View.VISIBLE
+                rvGithubUser.visibility = View.GONE
             } else {
+                binding.rlError.visibility = View.GONE
+                rvGithubUser.visibility = View.VISIBLE
                 showRecyclerList(userList, favoriteViewModel)
             }
         }
@@ -78,12 +81,11 @@ class FavoriteFragment : Fragment() {
                     favoriteViewModel.deleteFavoriteUser(userEntity)
                 }
 
-                val message = if (userEntity.isFavorite) "${userEntity.login} Berhasil ditambahkan ke favorit" else "${userEntity.login} dihapus dari favorit"
+                val message = if (userEntity.isFavorite) "${userEntity.login} added to favorite" else "${userEntity.login} removed from favorite"
 
                 val snackbar = Snackbar.make(clFavorite, message, Snackbar.LENGTH_SHORT)
 
                 snackbar.show()
-                adapter.notifyDataSetChanged()
             }
         })
     }

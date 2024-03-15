@@ -1,5 +1,6 @@
 package com.notsatria.githubusers.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.notsatria.githubusers.data.Result
@@ -29,17 +30,14 @@ class DetailUserRepository private constructor(
                     val responseBody = response.body()
                     appExecutors.diskIO.execute {
                         val isFavorite = userDao.isUserFavorite(username)
-                        val userEntity = UserEntity(
-                            responseBody?.id,
-                            responseBody?.login,
-                            responseBody?.avatarUrl,
-                            responseBody?.htmlUrl,
-                            isFavorite,
-                            responseBody?.followers,
-                            responseBody?.following,
-                            responseBody?.name
+                        userDao.updateDetailUser(
+                            responseBody?.login!!,
+                            responseBody?.followers!!,
+                            responseBody?.following!!,
+                            responseBody?.name!!,
+                            isFavorite
                         )
-                        userDao.update(userEntity)
+                        Log.d("DetailUserRepository", "onResponse: $responseBody")
                     }
                 }
             }

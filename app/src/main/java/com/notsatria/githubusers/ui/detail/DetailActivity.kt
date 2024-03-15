@@ -1,8 +1,10 @@
 package com.notsatria.githubusers.ui.detail
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -11,6 +13,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -19,18 +22,15 @@ import com.notsatria.githubusers.adapter.SectionsPagerAdapter
 import com.notsatria.githubusers.data.Result
 import com.notsatria.githubusers.data.local.entity.UserEntity
 import com.notsatria.githubusers.databinding.ActivityDetailBinding
+import com.notsatria.githubusers.ui.setting.SettingViewModel
+import com.notsatria.githubusers.ui.setting.SettingViewModelFactory
 
 class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
 
-//    val factory: DetailViewModelFactory = DetailViewModelFactory.getInstance(applicationContext)
-//    val detailViewModel: DetailViewModel by viewModels { factory }
-
-    private lateinit var factory: DetailViewModelFactory
-    private val detailViewModel: DetailViewModel by viewModels { factory }
-
     private var userEntity: UserEntity? = null
+    var darkModeColor: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,8 +43,15 @@ class DetailActivity : AppCompatActivity() {
         supportActionBar?.elevation = 0f
 
         val username = intent.getStringExtra(DetailViewModel.EXTRA_USERNAME)
+        val fab: FloatingActionButton = binding.fabFavorite
 
-        factory = DetailViewModelFactory.getInstance(applicationContext)
+        Log.d("DetailActivity", "onCreate: $username")
+
+        fab.imageTintList = ContextCompat.getColorStateList(this, R.color.error)
+        fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.light_purple))
+
+        val detailFactory = DetailViewModelFactory.getInstance(applicationContext)
+        val detailViewModel: DetailViewModel by viewModels { detailFactory }
 
         let {
             if (username != null) {
@@ -66,6 +73,7 @@ class DetailActivity : AppCompatActivity() {
                                         .into(ivAvatarDetail)
                                     tvFollowersDetail.text = user.followers.toString()
                                     tvFollowingDetail.text = user.following.toString()
+                                    fab.setImageResource(if (user.isFavorite) R.drawable.ic_favorite_24 else R.drawable.ic_favorite_border_24)
                                 }
                             }
                             is Result.Error -> {
@@ -105,17 +113,20 @@ class DetailActivity : AppCompatActivity() {
             showError(isError)
         }
 
-        binding.fabShare.setOnClickListener {
-            userEntity?.let { user ->
-                val shareText = "Check out this user at Github: ${user.htmlUrl}"
-                val sendIntent: Intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, shareText)
-                    type = "text/plain"
-                }
-                val shareIntent = Intent.createChooser(sendIntent, null)
-                startActivity(shareIntent)
+        val settingFactory: SettingViewModelFactory = SettingViewModelFactory.getInstance(applicationContext)
+        val settingViewModel: SettingViewModel by viewModels{ settingFactory }
+
+        settingViewModel.getThemeSettings().observe(this) {isDarkModeActive ->
+            if (isDarkModeActive) {
+                darkModeColor = ContextCompat.getColor(this, R.color.light_purple)
+            } else {
+                darkModeColor = ContextCompat.getColor(this, R.color.dark_purple)
             }
+
+        }
+
+        fab.setOnClickListener {
+            favorite(fab, detailViewModel)
         }
     }
 
@@ -128,14 +139,10 @@ class DetailActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.favorite_menu, menu)
-        val menuItem = menu?.findItem(R.id.favorite)
+        menuInflater.inflate(R.menu.share_menu, menu)
+        val menuItem = menu?.findItem(R.id.share)
 
-        userEntity?.let { user ->
-            menuItem?.setIcon(if (user.isFavorite) R.drawable.ic_favorite_24 else R.drawable.ic_favorite_border_24)
-        }
-
-        menuItem?.icon?.setTint(ContextCompat.getColor(this, R.color.error))
+        menuItem?.icon?.setTint(darkModeColor!!)
         return true
     }
 
@@ -145,19 +152,8 @@ class DetailActivity : AppCompatActivity() {
                 onBackPressedDispatcher.onBackPressed()
                 return true
             }
-            R.id.favorite -> {
-                userEntity?.let { user ->
-                    if (user.isFavorite) {
-                        detailViewModel.deleteFavoriteUser(user)
-                        showSnackbar("${user.login} removed from favorite")
-                    } else {
-                        detailViewModel.setFavoriteUser(user)
-                        showSnackbar("${user.login} added to favorite")
-                    }
-
-                    item.setIcon(if (user.isFavorite) R.drawable.ic_favorite_24 else R.drawable.ic_favorite_border_24)
-                    item.icon?.setTint(ContextCompat.getColor(this, R.color.error))
-                }
+            R.id.share -> {
+                shareUser()
             }
         }
 
@@ -166,6 +162,32 @@ class DetailActivity : AppCompatActivity() {
 
     private fun showSnackbar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun shareUser() {
+        userEntity?.let { user ->
+            val shareText = "Check out this user at Github: ${user.htmlUrl}"
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, shareText)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
+        }
+    }
+
+    private fun favorite(fab: FloatingActionButton, viewModel: DetailViewModel) {
+        userEntity?.let { user ->
+            if (user.isFavorite) {
+                viewModel.deleteFavoriteUser(user)
+                showSnackbar("${user.login} removed from favorite")
+            } else {
+                viewModel.setFavoriteUser(user)
+                showSnackbar("${user.login} added to favorite")
+            }
+            fab.setImageResource(if (user.isFavorite) R.drawable.ic_favorite_24 else R.drawable.ic_favorite_border_24)
+        }
     }
 
     companion object {

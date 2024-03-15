@@ -40,11 +40,11 @@ class HomeFragment : Fragment() {
         val factory: HomeViewModelFactory = HomeViewModelFactory.getInstance(requireContext())
         val homeViewModel: HomeViewModel by viewModels { factory }
 
-        homeViewModel.searchUser("a").observe(viewLifecycleOwner) { result ->
+        homeViewModel.getInitialUser("a").observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 when (result) {
                     is Result.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
+                        showLoading()
                     }
                     is Result.Success -> {
                         binding.rlError.visibility = View.GONE
@@ -58,6 +58,11 @@ class HomeFragment : Fragment() {
                         binding.rlEmptySearch.visibility = View.VISIBLE
                     }
                     is Result.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.rlError.visibility = View.VISIBLE
+                    }
+
+                    else -> {
                         binding.progressBar.visibility = View.GONE
                         binding.rlError.visibility = View.VISIBLE
                     }
@@ -94,11 +99,15 @@ class HomeFragment : Fragment() {
                                         binding.progressBar.visibility = View.GONE
                                         binding.rlError.visibility = View.VISIBLE
                                     }
+                                    else -> {
+                                        binding.progressBar.visibility = View.GONE
+                                        binding.rlError.visibility = View.VISIBLE}
                                 }
                             }
 
                         }
                     }
+
                     searchView.hide()
 
                     false
@@ -146,5 +155,9 @@ class HomeFragment : Fragment() {
 
     private fun showSnackbar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun showLoading() {
+        binding.progressBar.visibility = View.VISIBLE
     }
 }

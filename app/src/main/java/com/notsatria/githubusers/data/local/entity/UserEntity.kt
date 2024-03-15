@@ -10,10 +10,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class UserEntity(
     @PrimaryKey
-    val id: Int? = null,
-
-    @ColumnInfo(name = "login")
-    val login: String? = null,
+    val login: String,
 
     @ColumnInfo(name = "avatar_url")
     val avatarUrl: String? = null,

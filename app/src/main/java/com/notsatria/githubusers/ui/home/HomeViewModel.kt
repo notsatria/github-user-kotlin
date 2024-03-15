@@ -9,6 +9,8 @@ class HomeViewModel(private val githubUserRepository: GithubUserRepository) : Vi
         private const val TAG = "HomeViewModel"
     }
 
+    fun getInitialUser(query: String) = githubUserRepository.getInitialUser(query)
+
     fun searchUser(query: String) = githubUserRepository.searchUser(query)
 
     fun setFavoriteUser(user: UserEntity) {
